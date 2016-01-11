@@ -29,10 +29,10 @@ def select_parents(population):
 	return sorted_population[:parents_count], sorted_population[parents_count:]
 
 def cross(parents):
-	offspring = list()
+	kids = list()
 	if len(parents) % 2 == 1:
 		# wrzucam najsilniejszego do potomstwa jesli nieparzysci rodzice
-		offspring.append(parents.pop(0))
+		kids.append(parents.pop(0))
 	while parents:
 		first = parents.pop(random.randint(0,len(parents)-1))
 		second = parents.pop(random.randint(0,len(parents)-1))
@@ -43,9 +43,9 @@ def cross(parents):
 		mother_genes = [second['chromosome'] >> bits, second['chromosome'] % x]
 		first['chromosome'] = (mother_genes[0] << bits) | (father_genes[1])
 		second['chromosome'] = (father_genes[0] << bits) | (mother_genes[1])
-		offspring.append(first)
-		offspring.append(second)
-	return offspring
+		kids.append(first)
+		kids.append(second)
+	return kids
 
 def mutate(population):
 	mutated = list()
@@ -74,10 +74,10 @@ def genetic(fitness, pop_size, gen_count):
 	# dla kazdej generacji:
 	for generation in range(0, gen_count):
 		parents, rest = select_parents(population)
-		offspring = cross(parents)
-		offspring = mutate(offspring)
-		calculate_fitness(fitness, offspring)
-		population = offspring + rest
+		kids = cross(parents)
+		kids = mutate(kids)
+		calculate_fitness(fitness, kids)
+		population = kids + rest
 		chromosomes = []
 		for spec in population:
 			chromosomes.append(spec['chromosome'])

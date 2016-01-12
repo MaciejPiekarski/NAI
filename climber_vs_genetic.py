@@ -21,17 +21,17 @@ def create_speciman(chromosome, fit):
 	return {'chromosome': chromosome, 'fit': fit}
 
 def select_parents(population):
-	# ile zwrocic (30-60%)
+	# ile procent populacji wybrać (30-60%)
 	percent = float(random.randint(3,6))/10
 	parents_count = int(len(population)*percent)
-	# lista rodzicow posortowana od najwiekszej wartosci fenotypu
+	# posortowana lista rodzicow po kondycji
 	sorted_population = sorted(population, key=lambda k: k['fit'])
 	return sorted_population[:parents_count], sorted_population[parents_count:]
 
 def cross(parents):
 	kids = list()
 	if len(parents) % 2 == 1:
-		# wrzucam najsilniejszego do potomstwa jesli nieparzysci rodzice
+		# jeżeli liczba rodziców jest nieparzysta najsilniejszy trafia do potomstwa
 		kids.append(parents.pop(0))
 	while parents:
 		first = parents.pop(random.randint(0,len(parents)-1))
@@ -50,9 +50,15 @@ def cross(parents):
 def mutate(population):
 	mutated = list()
 	for speciman in population:
-		if random.randint(0,9) < 2:
+		if random.randint(0,99) < 2:
 			res = speciman
-			res['chromosome'] = random.randint(0,254)
+			chromosomeToMutate = '{0:08b}'.format(res['chromosome'])
+			chromosomeToMutate = list(chromosomeToMutate)
+			index = random.randint(0,len(chromosomeToMutate)-1)
+			mutatedChromosome = int(chromosomeToMutate[index]) ^ 1
+			chromosomeToMutate[index] = str(mutatedChromosome)
+			chromosomeToMutate = "".join(chromosomeToMutate)
+			res['chromosome'] = int(chromosomeToMutate, 2)
 		else:
 			res = speciman
 		mutated.append(res)
@@ -63,7 +69,7 @@ def calculate_fitness(fitness, population):
 		speciman['fit'] = fitness(speciman['chromosome'])
 
 def genetic(fitness, pop_size, gen_count):
-	# tworzenie popoulacji (lista)
+	# tworzenie popoulacji jako listy
 	population = list()
 	for x in range(0, pop_size):
 		population.append(create_speciman(random.randint(0,255), 0))
@@ -83,14 +89,12 @@ def genetic(fitness, pop_size, gen_count):
 			chromosomes.append(spec['chromosome'])
 			if spec['fit'] > best['fit']:
 				best = spec
-		#print best
 		print (chromosomes)
 	return('BEST SPECIMAN: %s' % (best))
 
-f = lambda x: (x**3)-(x**2) + 3
-#f = lambda x: -(x**2) + 3
-#f = lambda x: math.sin((math.pi*x)/128)
+f = lambda x: math.sin((math.pi*x)/128)
+#f = lambda x: sum(x**2)
 
-x = genetic(f, 100, 100)
-print (climber(f))
+x = genetic(f, 10, 10)
+#print (climber(f))
 print (x)

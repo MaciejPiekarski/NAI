@@ -103,13 +103,15 @@ def genetic(fitness, pop_size, gen_count):
 	return('BEST SPECIMAN: %s' % (best))
 
 def Rosenbrock(population):
-
+    rossum = []
+    for x in range(0, len(population)-1):
+        rossum.append((1-population[x])**2 + 100*(population[x+1]-population[x]**2)**2)
+    return rossum.index(max(rossum))
 
 pop = create_population()
 f = lambda x: x**2
 
-
-
 print (pop)
 print (climber(pop))
 print (genetic(f,pop,10))
+print (pop[Rosenbrock(pop)])

@@ -1,32 +1,41 @@
-import random, math
+import random
 
+def create_population():
+    population = list()
+    for x in range(0,100):
+        population.append(random.randint(1,100))
+    return population
+
+#Algorytm wspinaczkowy
 def climber(f):
-	x0 = random.randint(0,1000)
-	print('x0: %s' % (x0))
-	breaker = 0
-	while breaker < 1000:
-		breaker += 1
-		max = x0
-		neighbours = [max - 1, max + 1]
-		for x in neighbours:
-			print('f(%s) = %s > f(%s) = %s' % (x, f(x), max, f(max)))
-			if f(x) > f(max):
-				max = x
-		if max == x0:
-			break
-		x0 = max
-	return max
+    x0 = random.randint(0,len(f)-1)
+    print('Indeks elemntu wylosowanego z listy: %s' % x0)
+    breaker = 0
+    while breaker < len(f)-1:
+        breaker += 1
+        max = f[x0]
+        neighbours = [f[x0-1], f[x0+1]]
+        print('Sasiad lewy: %s, Najwiekszy element: %s, Sasiad prawy %s' % (neighbours[0], max, neighbours[-1]))
+        for x in neighbours:
+            if x > max:
+                max = x
+        if max == f[x0]:
+            break
+        x0 = f.index(max)
+    return max
 
+#Algorytm ewolucyjny
 def create_speciman(chromosome, fit):
-	return {'chromosome': chromosome, 'fit': fit}
+    return {'chromosome': chromosome, 'fit': fit}
 
+#selekcja: metoda rankingowa
 def select_parents(population):
-	# ile procent populacji wybrać (30-60%)
-	percent = float(random.randint(3,6))/10
-	parents_count = int(len(population)*percent)
-	# posortowana lista rodzicow po kondycji
-	sorted_population = sorted(population, key=lambda k: k['fit'])
-	return sorted_population[:parents_count], sorted_population[parents_count:]
+    # ile procent populacji wybrać (30-60%)
+    percent = float(random.randint(3,6))/10
+    parents_count = int(len(population)*percent)
+    # posortowana lista rodzicow po kondycji
+    sorted_population = sorted(population, key=lambda k: k['fit'])
+    return sorted_population[:parents_count], sorted_population[parents_count:]
 
 def cross(parents):
 	kids = list()
@@ -71,12 +80,13 @@ def calculate_fitness(fitness, population):
 def genetic(fitness, pop_size, gen_count):
 	# tworzenie popoulacji jako listy
 	population = list()
-	for x in range(0, pop_size):
-		population.append(create_speciman(random.randint(0,255), 0))
+	for x in range(0, len(pop_size)-1):
+		population.append(create_speciman(pop_size[x], 0))
 	# wyliczyc fitness dla populacji
 	calculate_fitness(fitness, population)
 	best = population[0]
-	print (population)
+	for pop in population:
+		print (pop)
 	# dla kazdej generacji:
 	for generation in range(0, gen_count):
 		parents, rest = select_parents(population)
@@ -92,9 +102,14 @@ def genetic(fitness, pop_size, gen_count):
 		print (chromosomes)
 	return('BEST SPECIMAN: %s' % (best))
 
-f = lambda x: math.sin((math.pi*x)/128)
-#f = lambda x: sum(x**2)
+def Rosenbrock(population):
 
-x = genetic(f, 10, 10)
-#print (climber(f))
-print (x)
+
+pop = create_population()
+f = lambda x: x**2
+
+
+
+print (pop)
+print (climber(pop))
+print (genetic(f,pop,10))
